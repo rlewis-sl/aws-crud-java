@@ -29,7 +29,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
     }
 
     private static class EchoChamber {
-        private final String echo = "chamber (...echo echo chamber)";
+        private final String echo = "chamber";
 
         public String getEcho() {
             return echo;

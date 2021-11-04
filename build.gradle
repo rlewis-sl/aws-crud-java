@@ -44,5 +44,3 @@ task deployLambda(type: Exec) {
     // TODO: parameterize lambda function name and zip file name in batch file
     commandLine  'cmd', '/c', 'deploylambda.bat'
 }
-
-cd
