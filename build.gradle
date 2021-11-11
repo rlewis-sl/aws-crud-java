@@ -38,9 +38,23 @@ build {
     dependsOn buildZip
 }
 
+task createApi(type: Exec) {
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'createapi.bat'
+}
+
+task createLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'createlambda.bat'
+}
+
 task deployLambda(type: Exec) {
     dependsOn buildZip
     // TODO: depend on test task and abandon if tests don't pass
-    // TODO: parameterize lambda function name and zip file name in batch file
-    commandLine  'cmd', '/c', 'deploylambda.bat'
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'deploylambda.bat'
 }
