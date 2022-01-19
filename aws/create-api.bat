@@ -1,3 +1,5 @@
+REM TODO: Parameterise the lambda function id used as target.
+
 aws apigatewayv2 create-api^
  --name SLDemo_API^
  --protocol-type HTTP^

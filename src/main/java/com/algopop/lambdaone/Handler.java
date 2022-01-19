@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
@@ -18,21 +19,37 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
         response.setStatusCode(200);
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
 
         response.setHeaders(headers);
 
-        response.setBody(gson.toJson(new EchoChamber()));
+        List<CloudBill> list = List.of(new CloudBill(), new CloudBill(), new CloudBill());
+        CloudBillCollection collection = new CloudBillCollection(list);
+
+        response.setBody(gson.toJson(collection));
 
         return response;
     }
 
-    private static class EchoChamber {
-        private final String echo = "chamber";
+    private static class CloudBill {
+        private final String eventDateTime;
+        private final float cost;
+        private final float usage;
 
-        public String getEcho() {
-            return echo;
+        public CloudBill() {
+            this.eventDateTime = "2022-01-19T14:00:00Z";
+            this.cost = 0.0f;
+            this.usage = 100.0f;
+        }
+        
+    }
+
+    private static class CloudBillCollection {
+        private final List<CloudBill> list;
+
+        public CloudBillCollection(List<CloudBill> list) {
+            this.list = list;
         }
     }
 }
