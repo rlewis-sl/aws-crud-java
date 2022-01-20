@@ -1,4 +1,4 @@
-package com.algopop.lambdaone;
+package com.algopop.awscrud;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
-    private static final ScanRequest.Builder requestBuilder = ScanRequest.builder().tableName("CloudBill").limit(20);
+    private static final ScanRequest.Builder requestBuilder = ScanRequest.builder().tableName("Widget").limit(20);
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
@@ -42,7 +42,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
     private APIGatewayV2HTTPResponse handleGetRequest() {
         APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
 
-        CloudBillCollection collection = getItems();
+        WidgetCollection collection = getItems();
 
         response.setStatusCode(200);
 
@@ -56,68 +56,70 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         return response;
     }
 
-    private CloudBillCollection getItems() {
+    private WidgetCollection getItems() {
 
         ScanRequest scanRequest = requestBuilder.build();
 
         final DynamoDbClient ddb = clientBuilder.build();
         ScanResponse scanResponse = ddb.scan(scanRequest);
 
-        List<CloudBill> list = new ArrayList<>();
+        List<Widget> list = new ArrayList<>();
         if (scanResponse != null) {
             List<Map<String, AttributeValue>> items = scanResponse.items();
 
             if (items != null) {
                 for (Map<String, AttributeValue> item : items) {
-                    list.add(buildCloudBill(item));
+                    list.add(buildWidget(item));
                 }
             }
         }
 
-        return new CloudBillCollection(list);
+        return new WidgetCollection(list);
     }
 
-    private CloudBill buildCloudBill(Map<String, AttributeValue> item) {
-        String eventDateTime = item.get("EventDateTime").s();
+    private Widget buildWidget(Map<String, AttributeValue> item) {
+        String id = item.get("Id").s();
+        String name = item.get("Name").s();
         float cost = Float.parseFloat(item.get("Cost").n());
-        float usage = Float.parseFloat(item.get("Usage").n());
+        float weight = Float.parseFloat(item.get("Weight").n());
 
-        return new CloudBill(eventDateTime, cost, usage);
+        return new Widget(id, name, cost, weight);
     }
 
-    private static class CloudBill {
-        private final String service = "default";
-        private final String eventDateTime;
+    private static class Widget {
+        private final String id;
+        private final String name;
         private final float cost;
-        private final float usage;
+        private final float weight;
 
-        public CloudBill(String eventDateTime, float cost, float usage) {
-            this.eventDateTime = eventDateTime;
+        public Widget(String id, String name, float cost, float weight) {
+            this.id = id;
+            this.name = name;
             this.cost = cost;
-            this.usage = usage;
+            this.weight = weight;
         }
 
-        public String getService() {
-            return service;
+        public String getId() {
+            return id;
         }
 
-        public String getEventDateTime() {
-            return eventDateTime;
+        public String getName() {
+            return name;
         }
 
         public float getCost() {
             return cost;
         }
 
-        public float getUsage() {
-            return usage;
+        public float getWeight() {
+            return weight;
         }
     }
 
-    private static class CloudBillCollection {
-        private final List<CloudBill> items;
+    private static class WidgetCollection {
+        private final List<Widget> items;
 
-        public CloudBillCollection(List<CloudBill> items) {
+        public WidgetCollection(List<Widget> items) {
             this.items = items;
         }
     }

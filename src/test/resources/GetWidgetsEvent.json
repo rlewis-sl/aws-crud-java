@@ -1,7 +1,7 @@
 {
     "version": "2.0",
     "routeKey": "$default",
-    "rawPath": "/cloudbills",
+    "rawPath": "/widgets",
     "rawQueryString": "",
     "cookies": [],
     "headers": {},
@@ -15,7 +15,7 @@
       "domainPrefix": "id",
       "http": {
         "method": "GET",
-        "path": "/cloudbills",
+        "path": "/widgets",
         "protocol": "HTTP/1.1",
         "sourceIp": "IP",
         "userAgent": "agent"
