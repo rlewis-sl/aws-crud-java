@@ -50,24 +50,40 @@ task createDynamoDbTable(type: Exec) {
     commandLine 'cmd', '/c', 'create-dynamodbtable.bat'
 }
 
-task createLambda(type: Exec) {
+task createGetWidgetsLambda(type: Exec) {
     dependsOn buildZip
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'create-lambda.bat'
+    commandLine 'cmd', '/c', 'create-getwidgets-lambda.bat'
 }
 
-task deployLambda(type: Exec) {
+task deployGetWidgetsLambda(type: Exec) {
     dependsOn buildZip
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'deploy-lambda.bat'
+    commandLine 'cmd', '/c', 'deploy-getwidgets-lambda.bat'
+}
+
+task createCreateWidgetLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'create-createwidget-lambda.bat'
+}
+
+task deployCreateWidgetLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'deploy-createwidget-lambda.bat'
 }
 
 task testDeployLambda(type: Exec) {
     dependsOn buildZip
     workingDir './build/distributions'
-    commandLine 'cmd', '/c', 'aws lambda update-function-code --function-name SLDemo_Function --zip-file fileb://lambda-one-0.1-SNAPSHOT.zip'
+    commandLine 'cmd', '/c', 'aws lambda update-function-code --function-name GetWidgets --zip-file fileb://aws-crud-0.1-SNAPSHOT.zip'
 }
