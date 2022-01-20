@@ -7,7 +7,7 @@ aws lambda create-function^
  --role arn:aws:iam::184936849605:role/Lambda_WidgetCrud^
  --timeout 30
  --memory-size 256
- --handler com.algopop.awscrud.Handler::handleRequest^
+ --handler com.algopop.awscrud.GetListHandler::handleRequest^
  --zip-file fileb://aws-crud-0.1-SNAPSHOT.zip
 
 del aws-crud-0.1-SNAPSHOT.zip

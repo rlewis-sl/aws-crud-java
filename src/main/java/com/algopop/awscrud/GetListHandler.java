@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
+public class GetListHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
     private static final ScanRequest.Builder requestBuilder = ScanRequest.builder().tableName("Widget").limit(20);
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
