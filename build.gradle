@@ -12,6 +12,8 @@ repositories {
 dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.10.0'
+    implementation platform('software.amazon.awssdk:bom:2.17.113')
+    implementation 'software.amazon.awssdk:dynamodb'
     implementation 'com.google.code.gson:gson:2.8.9'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
@@ -41,6 +43,11 @@ build {
 task createApi(type: Exec) {
     workingDir './aws'
     commandLine 'cmd', '/c', 'create-api.bat'
+}
+
+task createDynamoDbTable(type: Exec) {
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'create-dynamodbtable.bat'
 }
 
 task createLambda(type: Exec) {
