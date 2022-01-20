@@ -50,20 +50,36 @@ task createDynamoDbTable(type: Exec) {
     commandLine 'cmd', '/c', 'create-dynamodbtable.bat'
 }
 
-task createGetWidgetsLambda(type: Exec) {
+task createGetWidgetListLambda(type: Exec) {
     dependsOn buildZip
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'create-getwidgets-lambda.bat'
+    commandLine 'cmd', '/c', 'create-getwidgetlist-lambda.bat'
 }
 
-task deployGetWidgetsLambda(type: Exec) {
+task deployGetWidgetListLambda(type: Exec) {
     dependsOn buildZip
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'deploy-getwidgets-lambda.bat'
+    commandLine 'cmd', '/c', 'deploy-getwidgetlist-lambda.bat'
+}
+
+task createGetWidgetLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'create-getwidget-lambda.bat'
+}
+
+task deployGetWidgetLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'deploy-getwidget-lambda.bat'
 }
 
 task createCreateWidgetLambda(type: Exec) {
