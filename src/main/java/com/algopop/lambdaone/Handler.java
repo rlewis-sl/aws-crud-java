@@ -29,8 +29,17 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
 
     @Override
-    public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
-        
+    public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
+        String httpMethod = request.getRequestContext().getHttp().getMethod();
+
+        if (httpMethod.equals("GET")) {
+            return handleGetRequest();
+        }
+
+        throw new IllegalArgumentException();  // should really return a 400 error of some kind
+    }
+
+    private APIGatewayV2HTTPResponse handleGetRequest() {
         APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
 
         CloudBillCollection collection = getItems();
