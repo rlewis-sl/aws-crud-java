@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.algopop.awscrud.dynamodb.Widgets.buildWidget;
 
 
 public class GetListHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
@@ -75,45 +78,6 @@ public class GetListHandler implements RequestHandler<APIGatewayV2HTTPEvent, API
         }
 
         return new WidgetCollection(list);
-    }
-
-    private Widget buildWidget(Map<String, AttributeValue> item) {
-        String id = item.get("Id").s();
-        String name = item.get("Name").s();
-        float cost = Float.parseFloat(item.get("Cost").n());
-        float weight = Float.parseFloat(item.get("Weight").n());
-
-        return new Widget(id, name, cost, weight);
-    }
-
-    private static class Widget {
-        private final String id;
-        private final String name;
-        private final float cost;
-        private final float weight;
-
-        public Widget(String id, String name, float cost, float weight) {
-            this.id = id;
-            this.name = name;
-            this.cost = cost;
-            this.weight = weight;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public float getCost() {
-            return cost;
-        }
-
-        public float getWeight() {
-            return weight;
-        }
     }
 
     private static class WidgetCollection {

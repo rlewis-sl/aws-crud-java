@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -142,37 +143,4 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         return new Widget(id, name, cost, weight);
     }
 
-    private static class Widget {
-        private String id;
-        private final String name;
-        private final Float cost;
-        private final Float weight;
-
-        public Widget(String id, String name, Float cost, Float weight) {
-            this.id = id;
-            this.name = name;
-            this.cost = cost;
-            this.weight = weight;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Float getCost() {
-            return cost;
-        }
-
-        public Float getWeight() {
-            return weight;
-        }
-    }
 }
