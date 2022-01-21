@@ -27,4 +27,19 @@ public class Widgets {
         attributes.put("Id", idValue);
         return attributes;
     }
+
+    public static Map<String, AttributeValue> getAttributes(Widget widget) {
+        Map<String, AttributeValue> attributes = new HashMap<>();
+        AttributeValue idValue = AttributeValue.builder().s(widget.getId()).build();
+        AttributeValue nameValue = AttributeValue.builder().s(widget.getName()).build();
+        AttributeValue costValue = AttributeValue.builder().n(widget.getCost().toString()).build();
+        AttributeValue weightValue = AttributeValue.builder().n(widget.getWeight().toString()).build();
+
+        attributes.put("Id", idValue);
+        attributes.put("Name", nameValue);
+        attributes.put("Cost", costValue);
+        attributes.put("Weight", weightValue);
+
+        return attributes;
+    }
 }
