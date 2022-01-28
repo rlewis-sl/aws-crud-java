@@ -21,6 +21,10 @@ public class Widgets {
     }
 
     public static Map<String, AttributeValue> keyAttributes(String id) {
+        if (id.isBlank()) {
+            throw new IllegalArgumentException("Missing 'id' argument");
+        }
+        
         Map<String, AttributeValue> attributes = new HashMap<>();
         AttributeValue idValue = AttributeValue.builder().s(id).build();
 
