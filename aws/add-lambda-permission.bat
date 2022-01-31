@@ -1,5 +1,5 @@
-set api-id=acnncd1npk
-set function-name=%1
+set api-id=%1
+set function-name=%2
 
 aws lambda add-permission^
  --statement-id EnableApiLambda%function-name%Integration^

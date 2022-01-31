@@ -1,4 +1,4 @@
-set api-id=acnncd1npk
+set api-id=vlao80eelj
 set function-name=%1
 set method=GET
 
@@ -8,4 +8,6 @@ aws apigatewayv2 create-integration^
  --integration-uri arn:aws:lambda:eu-west-1:184936849605:function:%function-name%^
  --payload-format-version 2.0^
  --integration-method %method%
+
+add-lambda-permission %api-id% %function-name%
 
