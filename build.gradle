@@ -63,7 +63,7 @@ task deployGetWidgetListLambda(type: Exec) {
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'deploy-getwidgetlist-lambda.bat'
+    commandLine 'cmd', '/c', 'deploy-lambda.bat "GetWidgetList"' 
 }
 
 task createGetWidgetLambda(type: Exec) {
@@ -79,7 +79,7 @@ task deployGetWidgetLambda(type: Exec) {
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'deploy-getwidget-lambda.bat'
+    commandLine 'cmd', '/c', 'deploy-lambda.bat "GetWidget"' 
 }
 
 task createCreateWidgetLambda(type: Exec) {
@@ -95,7 +95,7 @@ task deployCreateWidgetLambda(type: Exec) {
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'deploy-createwidget-lambda.bat'
+    commandLine 'cmd', '/c', 'deploy-lambda.bat "CreateWidget"' 
 }
 
 task createUpdateWidgetLambda(type: Exec) {
@@ -111,7 +111,7 @@ task deployUpdateWidgetLambda(type: Exec) {
     // TODO: depend on test task and abandon if tests don't pass
     // TODO: parameterize zip file name in batch file
     workingDir './aws'
-    commandLine 'cmd', '/c', 'deploy-updatewidget-lambda.bat'
+    commandLine 'cmd', '/c', 'deploy-lambda.bat "UpdateWidget"' 
 }
 
 task testDeployLambda(type: Exec) {

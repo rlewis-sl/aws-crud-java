@@ -47,26 +47,33 @@ public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, A
 
         String id = request.getPathParameters().get("id");
 
-        Widget widget = getWidget(id);
+        try {
+            Widget widget = getWidget(id);
+            response.setStatusCode(200);
 
-        response.setStatusCode(200);
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
 
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
+            response.setHeaders(headers);
 
-        response.setHeaders(headers);
+            response.setBody(gson.toJson(widget));
 
-        response.setBody(gson.toJson(widget));
-
+        } catch (ItemNotFoundException ex) {
+            response.setStatusCode(404);
+        }
+        
         return response;
     }
 
-    private Widget getWidget(String id) {
+    private Widget getWidget(String id) throws ItemNotFoundException {
         Map<String, AttributeValue> keyAttributes = keyAttributes(id);
         GetItemRequest getItemRequest = GetItemRequest.builder().tableName(TABLE_NAME).key(keyAttributes).build();
 
         final DynamoDbClient ddb = clientBuilder.build();
         GetItemResponse getItemResponse = ddb.getItem(getItemRequest);
+        if (!getItemResponse.hasItem()) {
+            throw new ItemNotFoundException(id);
+        }
         return buildWidget(getItemResponse.item());
     }
 }
