@@ -1,6 +1,7 @@
 package com.algopop.awscrud;
 
 import com.algopop.awscrud.model.Widget;
+import com.algopop.awscrud.mongodb.Widgets;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -17,14 +18,27 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.InsertOneResult;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Random;
+
+import static com.algopop.awscrud.MongoDb.WIDGETS_DEMO_DB;
+import static com.algopop.awscrud.MongoDb.WIDGET_COLLECTION;
 
 
 public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final String TABLE_NAME = "Widget";
+    private static final boolean IS_MONGODB = true;
+    private static final String TABLE_NAME = "Widget"; // DynamoDb
 
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -49,7 +63,13 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         Widget widget = gson.fromJson(body, Widget.class);
 
         String id = createWidget(widget);
-        Widget retrievedWidget = getWidget(id);
+        Widget retrievedWidget;
+        try {
+            retrievedWidget = getWidget(id);
+        } catch (ItemNotFoundException ex) {
+            response.setStatusCode(500);
+            return response;
+        }
 
         response.setStatusCode(201);
     
@@ -63,6 +83,9 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
     }
 
     private String createWidget(Widget widget) {
+        if (IS_MONGODB) {
+            return createWidgetMongoDb(widget);
+        }
 
         final DynamoDbClient ddb = clientBuilder.build();
 
@@ -76,13 +99,57 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         return id;
     }
 
-    private Widget getWidget(String id) {
+    private String createWidgetMongoDb(Widget widget) {
+        Document doc = Widgets.widgetToDocument(widget);
+
+        final String connectionString = MongoDb.getConnectionString();
+        MongoClient mongoClient = MongoDb.getClient(connectionString);
+        try {
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+            InsertOneResult result = collection.insertOne(doc);
+
+            return result.getInsertedId().asObjectId().getValue().toHexString();
+
+        } finally {
+            mongoClient.close();
+        }
+    }
+
+    private Widget getWidget(String id) throws ItemNotFoundException {
+        if (IS_MONGODB) {
+            return getWidgetMongoDb(id);
+        }
+
         Map<String, AttributeValue> keyAttributes = keyAttributes(id);
         GetItemRequest getItemRequest = GetItemRequest.builder().tableName(TABLE_NAME).consistentRead(true).key(keyAttributes).build();
 
         final DynamoDbClient ddb = clientBuilder.build();
         GetItemResponse getItemResponse = ddb.getItem(getItemRequest);
+        if (!getItemResponse.hasItem()) {
+            throw new ItemNotFoundException(id);
+        }
         return buildWidget(getItemResponse.item());
+    }
+
+    private Widget getWidgetMongoDb(String id) throws ItemNotFoundException {
+        final String connectionString = MongoDb.getConnectionString();
+        MongoClient mongoClient = MongoDb.getClient(connectionString);
+
+        try {
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+
+            Bson filter = Filters.eq("_id", new ObjectId(id));
+            Iterable<Document> widgetCursor = collection.find(filter);
+            Document doc = widgetCursor.iterator().next();
+        
+            return MongoDb.buildWidget(doc);
+
+        } catch (NoSuchElementException ex) {
+            throw new ItemNotFoundException();
+            
+        } finally {
+            mongoClient.close();
+        }
     }
 
     private Map<String, AttributeValue> keyAttributes(String id) {
