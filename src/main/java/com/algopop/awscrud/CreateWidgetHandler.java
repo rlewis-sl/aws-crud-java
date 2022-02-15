@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -14,7 +15,6 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -24,9 +24,9 @@ import java.util.Random;
 
 
 public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final String TABLE_NAME = "Widget";
-
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
+    private static final DynamoDbClient ddb = clientBuilder.build();
+
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Random random = new Random();
 
@@ -63,14 +63,11 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
     }
 
     private String createWidget(Widget widget) {
-
-        final DynamoDbClient ddb = clientBuilder.build();
-
         String id = generateId();
         widget.setId(id);
         Map<String, AttributeValue> item = getAttributes(widget);
 
-        PutItemRequest putItemRequest = PutItemRequest.builder().tableName(TABLE_NAME).item(item).build();
+        PutItemRequest putItemRequest = PutItemRequest.builder().tableName(Widgets.TABLE_NAME).item(item).build();
         ddb.putItem(putItemRequest);
 
         return id;
@@ -78,9 +75,8 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
 
     private Widget getWidget(String id) {
         Map<String, AttributeValue> keyAttributes = keyAttributes(id);
-        GetItemRequest getItemRequest = GetItemRequest.builder().tableName(TABLE_NAME).consistentRead(true).key(keyAttributes).build();
+        GetItemRequest getItemRequest = GetItemRequest.builder().tableName(Widgets.TABLE_NAME).consistentRead(true).key(keyAttributes).build();
 
-        final DynamoDbClient ddb = clientBuilder.build();
         GetItemResponse getItemResponse = ddb.getItem(getItemRequest);
         return buildWidget(getItemResponse.item());
     }

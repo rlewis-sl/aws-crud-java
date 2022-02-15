@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -27,7 +28,9 @@ import static com.algopop.awscrud.dynamodb.Widgets.buildWidget;
 
 public class GetListHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
-    private static final ScanRequest.Builder requestBuilder = ScanRequest.builder().tableName("Widget").limit(20);
+    private static final DynamoDbClient ddb = clientBuilder.build();
+    private static final ScanRequest.Builder requestBuilder = ScanRequest.builder().tableName(Widgets.TABLE_NAME).limit(100);
+    private static ScanRequest scanRequest = requestBuilder.build();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
@@ -61,9 +64,6 @@ public class GetListHandler implements RequestHandler<APIGatewayV2HTTPEvent, API
 
     private WidgetCollection getItems() {
 
-        ScanRequest scanRequest = requestBuilder.build();
-
-        final DynamoDbClient ddb = clientBuilder.build();
         ScanResponse scanResponse = ddb.scan(scanRequest);
 
         List<Widget> list = new ArrayList<>();

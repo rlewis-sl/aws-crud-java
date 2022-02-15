@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.dynamodb.Widgets;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -17,9 +18,8 @@ import java.util.Map;
 
 
 public class DeleteWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final String TABLE_NAME = "Widget";
-
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
+    private static final DynamoDbClient ddb = clientBuilder.build();
 
 
     @Override
@@ -47,9 +47,8 @@ public class DeleteWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
 
     private void deleteWidget(String id) {
         Map<String, AttributeValue> keyAttributes = keyAttributes(id);
-        DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder().tableName(TABLE_NAME).key(keyAttributes).build();
+        DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder().tableName(Widgets.TABLE_NAME).key(keyAttributes).build();
 
-        final DynamoDbClient ddb = clientBuilder.build();
         ddb.deleteItem(deleteItemRequest);
     }
 }

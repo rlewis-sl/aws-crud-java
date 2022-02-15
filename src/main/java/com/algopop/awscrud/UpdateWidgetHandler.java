@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -14,7 +15,6 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -26,11 +26,12 @@ import static com.algopop.awscrud.dynamodb.Widgets.keyAttributes;
 
 
 public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final String TABLE_NAME = "Widget";
     private static final String UPDATE_SCRIPT = "SET #name = :name, Cost = :cost, Weight = :weight";
     private static final Map<String, String> ATTRIBUTE_NAME_MAP = Map.of("#name", "Name");
 
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
+    private static final DynamoDbClient ddb = clientBuilder.build();
+
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
@@ -66,9 +67,6 @@ public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
     }
 
     private Widget updateWidget(String id, Widget widget) {
-
-        final DynamoDbClient ddb = clientBuilder.build();
-
         String widgetId = widget.getId();
         if (widgetId.isBlank()) {
             widget.setId(id);
@@ -81,7 +79,7 @@ public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         Map<String, AttributeValue> updateValues = expressionAttributeValues(widget);
 
         UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
-            .tableName(TABLE_NAME)
+            .tableName(Widgets.TABLE_NAME)
             .key(keyAttributes)
             .updateExpression(UPDATE_SCRIPT)
             .expressionAttributeNames(ATTRIBUTE_NAME_MAP)

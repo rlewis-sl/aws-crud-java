@@ -8,6 +8,7 @@ import java.util.Map;
 import com.algopop.awscrud.model.Widget;
 
 public class Widgets {
+    public static final String TABLE_NAME = "Widget";
 
     private Widgets() {}
     

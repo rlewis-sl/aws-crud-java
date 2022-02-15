@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -25,9 +26,8 @@ import static com.algopop.awscrud.dynamodb.Widgets.keyAttributes;
 
 
 public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final String TABLE_NAME = "Widget";
-
     private static final DynamoDbClientBuilder clientBuilder = DynamoDbClient.builder().region(Region.EU_WEST_1);
+    private static final DynamoDbClient ddb = clientBuilder.build();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 
@@ -67,9 +67,11 @@ public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, A
 
     private Widget getWidget(String id) throws ItemNotFoundException {
         Map<String, AttributeValue> keyAttributes = keyAttributes(id);
-        GetItemRequest getItemRequest = GetItemRequest.builder().tableName(TABLE_NAME).key(keyAttributes).build();
+        GetItemRequest getItemRequest = GetItemRequest.builder()
+            .tableName(Widgets.TABLE_NAME)
+            .key(keyAttributes)
+            .build();
 
-        final DynamoDbClient ddb = clientBuilder.build();
         GetItemResponse getItemResponse = ddb.getItem(getItemRequest);
         if (!getItemResponse.hasItem()) {
             throw new ItemNotFoundException(id);

@@ -114,6 +114,22 @@ task deployUpdateWidgetLambda(type: Exec) {
     commandLine 'cmd', '/c', 'deploy-lambda.bat "UpdateWidget"' 
 }
 
+task createDeleteWidgetLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'create-deletewidget-lambda.bat'
+}
+
+task deployDeleteWidgetLambda(type: Exec) {
+    dependsOn buildZip
+    // TODO: depend on test task and abandon if tests don't pass
+    // TODO: parameterize zip file name in batch file
+    workingDir './aws'
+    commandLine 'cmd', '/c', 'deploy-lambda.bat "DeleteWidget"' 
+}
+
 task testDeployLambda(type: Exec) {
     dependsOn buildZip
     workingDir './build/distributions'
