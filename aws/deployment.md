@@ -1,5 +1,5 @@
-CREATE DYNAMODB TABLE
-- create-dynamodbtable.bat
+CREATE MONGODB TABLE
+- [ TODO ]
 
 CREATE LAMBDA FUNCTIONS
 - create-getwidgetlist-lambda.bat
