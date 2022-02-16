@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 
 import com.algopop.awscrud.ItemNotFoundException;
 import com.algopop.awscrud.model.Widget;
+import com.algopop.awscrud.model.WidgetCollection;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -24,7 +25,7 @@ public class Widgets {
     private Widgets() {
     }
 
-    public static List<Widget> getWidgets() {
+    public static WidgetCollection getWidgets() {
         final String connectionString = MongoDb.getConnectionString();
         MongoClient mongoClient = MongoDb.getClient(connectionString);
         try {
@@ -38,7 +39,7 @@ public class Widgets {
                 widgets.add(buildWidget(doc));
             }
 
-            return widgets;
+            return new WidgetCollection(widgets);
         } finally {
             mongoClient.close();
             mongoClient = null;
@@ -84,14 +85,7 @@ public class Widgets {
         }
     }
 
-    public static Widget updateWidget(String id, Widget widget) {
-        String widgetId = widget.getId();
-        if (widgetId.isBlank()) {
-            widget.setId(id);
-        } else if (!widgetId.equals(id)) {
-            throw new IllegalArgumentException(); // should really return a 400 error of some kind
-        }
-
+    public static Widget updateWidget(Widget widget) {
         Document doc = widgetToDocument(widget);
 
         final String connectionString = MongoDb.getConnectionString();
@@ -99,7 +93,7 @@ public class Widgets {
         try {
             MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB,
                     WIDGET_COLLECTION);
-            Bson filter = Filters.eq("_id", new ObjectId(id));
+            Bson filter = Filters.eq("_id", new ObjectId(widget.getId()));
             collection.replaceOne(filter, doc);
 
             return widget;

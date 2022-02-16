@@ -1,6 +1,5 @@
 package com.algopop.awscrud;
 
-import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -13,11 +12,10 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.algopop.awscrud.dynamodb.Widgets.getWidget;
 
 public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
-    private static final boolean IS_MONGODB = true;
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
@@ -27,7 +25,7 @@ public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, A
             return handleGetRequest(request);
         }
 
-        throw new IllegalArgumentException();  // should really return a 400 error of some kind
+        throw new IllegalArgumentException(); // should really return a 400 error of some kind
     }
 
     private APIGatewayV2HTTPResponse handleGetRequest(APIGatewayV2HTTPEvent request) {
@@ -49,15 +47,7 @@ public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, A
         } catch (ItemNotFoundException ex) {
             response.setStatusCode(404);
         }
-        
+
         return response;
-    }
-
-    private Widget getWidget(String id) throws ItemNotFoundException {
-        if (IS_MONGODB) {
-            return com.algopop.awscrud.mongodb.Widgets.getWidget(id);
-        }
-
-        return Widgets.getWidget(id);
     }
 }
