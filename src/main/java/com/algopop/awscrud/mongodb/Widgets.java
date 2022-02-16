@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.algopop.awscrud.ItemNotFoundException;
-import com.algopop.awscrud.MongoDb;
 import com.algopop.awscrud.model.Widget;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -22,13 +21,15 @@ public class Widgets {
     public static final String WIDGETS_DEMO_DB = "widgets-demo";
     public static final String WIDGET_COLLECTION = "widget";
 
-    private Widgets() {}
+    private Widgets() {
+    }
 
     public static List<Widget> getWidgets() {
         final String connectionString = MongoDb.getConnectionString();
         MongoClient mongoClient = MongoDb.getClient(connectionString);
         try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB,
+                    WIDGET_COLLECTION);
             Iterable<Document> widgetCursor = collection.find();
 
             List<Widget> widgets = new ArrayList<>();
@@ -49,17 +50,18 @@ public class Widgets {
         MongoClient mongoClient = MongoDb.getClient(connectionString);
 
         try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB,
+                    WIDGET_COLLECTION);
 
             Bson filter = Filters.eq("_id", new ObjectId(id));
             Iterable<Document> widgetCursor = collection.find(filter);
             Document doc = widgetCursor.iterator().next();
-        
+
             return buildWidget(doc);
 
         } catch (NoSuchElementException ex) {
             throw new ItemNotFoundException();
-            
+
         } finally {
             mongoClient.close();
         }
@@ -71,7 +73,8 @@ public class Widgets {
         final String connectionString = MongoDb.getConnectionString();
         MongoClient mongoClient = MongoDb.getClient(connectionString);
         try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB,
+                    WIDGET_COLLECTION);
             InsertOneResult result = collection.insertOne(doc);
 
             return result.getInsertedId().asObjectId().getValue().toHexString();
@@ -86,7 +89,7 @@ public class Widgets {
         if (widgetId.isBlank()) {
             widget.setId(id);
         } else if (!widgetId.equals(id)) {
-            throw new IllegalArgumentException();  // should really return a 400 error of some kind
+            throw new IllegalArgumentException(); // should really return a 400 error of some kind
         }
 
         Document doc = widgetToDocument(widget);
@@ -94,7 +97,8 @@ public class Widgets {
         final String connectionString = MongoDb.getConnectionString();
         MongoClient mongoClient = MongoDb.getClient(connectionString);
         try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB,
+                    WIDGET_COLLECTION);
             Bson filter = Filters.eq("_id", new ObjectId(id));
             collection.replaceOne(filter, doc);
 
@@ -109,7 +113,8 @@ public class Widgets {
         final String connectionString = MongoDb.getConnectionString();
         MongoClient mongoClient = MongoDb.getClient(connectionString);
         try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
+            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB,
+                    WIDGET_COLLECTION);
             Bson filter = Filters.eq("_id", new ObjectId(id));
             collection.deleteOne(filter);
         } finally {
