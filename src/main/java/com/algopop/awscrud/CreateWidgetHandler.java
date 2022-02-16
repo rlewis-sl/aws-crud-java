@@ -12,8 +12,8 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.algopop.awscrud.mongodb.Widgets.createWidget;
-import static com.algopop.awscrud.mongodb.Widgets.getWidget;
+import static com.algopop.awscrud.dynamodb.Widgets.createWidget;
+import static com.algopop.awscrud.dynamodb.Widgets.getWidget;
 
 public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -37,7 +37,7 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
 
         String id = createWidget(widget);
         try {
-            Widget retrievedWidget = getWidget(id);
+            Widget retrievedWidget = getWidget(id, true);
 
             response.setStatusCode(201);
 
