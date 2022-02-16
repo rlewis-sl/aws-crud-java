@@ -1,6 +1,5 @@
 package com.algopop.awscrud;
 
-import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -13,10 +12,10 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.algopop.awscrud.mongodb.Widgets.updateWidget;
 
 public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
@@ -26,7 +25,7 @@ public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
             return handleUpdateWidgetRequest(request);
         }
 
-        throw new IllegalArgumentException();  // should really return a 400 error of some kind
+        throw new IllegalArgumentException(); // should really return a 400 error of some kind
     }
 
     private APIGatewayV2HTTPResponse handleUpdateWidgetRequest(APIGatewayV2HTTPEvent request) {
@@ -36,27 +35,32 @@ public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         Widget widget = gson.fromJson(body, Widget.class);
 
         String id = request.getPathParameters().get("id");
-        Widget updatedWidget = updateWidget(id, widget);
+        try {
+            ensureCorrectId(widget, id);
+            Widget updatedWidget = updateWidget(widget);
 
-        response.setStatusCode(200);
-    
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
-        response.setHeaders(headers);
+            response.setStatusCode(200);
 
-        response.setBody(gson.toJson(updatedWidget));
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            response.setHeaders(headers);
+
+            response.setBody(gson.toJson(updatedWidget));
+
+        } catch (Exception ex) {
+            response.setStatusCode(500);
+            response.setHeaders(new HashMap<>());
+        }
 
         return response;
     }
 
-    private Widget updateWidget(String id, Widget widget) {
+    private void ensureCorrectId(Widget widget, String id) {
         String widgetId = widget.getId();
         if (widgetId.isBlank()) {
             widget.setId(id);
         } else if (!widgetId.equals(id)) {
-            throw new IllegalArgumentException();  // should really return a 400 error of some kind
+            throw new IllegalArgumentException(); // should really return a 400 error of some kind
         }
-        
-        return Widgets.updateWidget(widget);
     }
 }

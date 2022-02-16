@@ -1,6 +1,5 @@
 package com.algopop.awscrud;
 
-import com.algopop.awscrud.dynamodb.Widgets;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -13,10 +12,11 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.algopop.awscrud.mongodb.Widgets.createWidget;
+import static com.algopop.awscrud.mongodb.Widgets.getWidget;
 
 public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
@@ -26,7 +26,7 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
             return handleCreateWidgetRequest(request);
         }
 
-        throw new IllegalArgumentException();  // should really return a 400 error of some kind
+        throw new IllegalArgumentException(); // should really return a 400 error of some kind
     }
 
     private APIGatewayV2HTTPResponse handleCreateWidgetRequest(APIGatewayV2HTTPEvent request) {
@@ -40,7 +40,7 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
             Widget retrievedWidget = getWidget(id);
 
             response.setStatusCode(201);
-        
+
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");
             headers.put("Location", "/widgets/" + id);
@@ -54,13 +54,5 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         }
 
         return response;
-    }
-
-    private String createWidget(Widget widget) {
-        return Widgets.createWidget(widget);
-    }
-
-    private Widget getWidget(String id) throws ItemNotFoundException {
-        return Widgets.getWidget(id, true);
     }
 }

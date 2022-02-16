@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.algopop.awscrud.ItemNotFoundException;
 import com.algopop.awscrud.model.Widget;
+import com.algopop.awscrud.model.WidgetCollection;
 
 
 public class Widgets {
@@ -29,21 +30,21 @@ public class Widgets {
 
     private Widgets() {}
 
-    public static List<Widget> getWidgets() {
+    public static WidgetCollection getWidgets() {
         ScanResponse scanResponse = DynamoDb.client().scan(scanRequest);
         
-        List<Widget> list = new ArrayList<>();
+        List<Widget> widgets = new ArrayList<>();
         if (scanResponse != null) {
             List<Map<String, AttributeValue>> items = scanResponse.items();
 
             if (items != null) {
                 for (Map<String, AttributeValue> item : items) {
-                    list.add(buildWidget(item));
+                    widgets.add(buildWidget(item));
                 }
             }
         }
 
-        return list;
+        return new WidgetCollection(widgets);
     }
 
     public static Widget getWidget(String id) throws ItemNotFoundException {
