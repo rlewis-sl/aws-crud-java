@@ -32,18 +32,18 @@ public class Widgets {
     public static List<Widget> getWidgets() {
         ScanResponse scanResponse = DynamoDb.client().scan(scanRequest);
         
-        List<Widget> list = new ArrayList<>();
+        List<Widget> widgets = new ArrayList<>();
         if (scanResponse != null) {
             List<Map<String, AttributeValue>> items = scanResponse.items();
 
             if (items != null) {
                 for (Map<String, AttributeValue> item : items) {
-                    list.add(buildWidget(item));
+                    widgets.add(buildWidget(item));
                 }
             }
         }
 
-        return list;
+        return widgets;
     }
 
     public static Widget getWidget(String id) throws ItemNotFoundException {

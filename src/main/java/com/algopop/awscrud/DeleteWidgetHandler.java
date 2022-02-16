@@ -5,16 +5,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-
-import static com.algopop.awscrud.MongoDb.WIDGETS_DEMO_DB;
-import static com.algopop.awscrud.MongoDb.WIDGET_COLLECTION;
 
 
 public class DeleteWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
@@ -45,21 +35,9 @@ public class DeleteWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
 
     private void deleteWidget(String id) {
         if (IS_MONGODB) {
-            deleteWidgetMongoDb(id);
+            com.algopop.awscrud.mongodb.Widgets.deleteWidget(id);
         } else {
             Widgets.deleteWidget(id);
-        }
-    }
-
-    private void deleteWidgetMongoDb(String id) {
-        final String connectionString = MongoDb.getConnectionString();
-        MongoClient mongoClient = MongoDb.getClient(connectionString);
-        try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
-            Bson filter = Filters.eq("_id", new ObjectId(id));
-            collection.deleteOne(filter);
-        } finally {
-            mongoClient.close();
         }
     }
 }

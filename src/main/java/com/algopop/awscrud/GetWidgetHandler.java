@@ -10,20 +10,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
-
-import static com.algopop.awscrud.MongoDb.WIDGETS_DEMO_DB;
-import static com.algopop.awscrud.MongoDb.WIDGET_COLLECTION;
 
 
 public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
@@ -67,30 +55,9 @@ public class GetWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, A
 
     private Widget getWidget(String id) throws ItemNotFoundException {
         if (IS_MONGODB) {
-            return getWidgetMongoDb(id);
+            return com.algopop.awscrud.mongodb.Widgets.getWidget(id);
         }
 
         return Widgets.getWidget(id);
-    }
-
-    private Widget getWidgetMongoDb(String id) throws ItemNotFoundException {
-        final String connectionString = MongoDb.getConnectionString();
-        MongoClient mongoClient = MongoDb.getClient(connectionString);
-
-        try {
-            MongoCollection<Document> collection = MongoDb.getCollection(mongoClient, WIDGETS_DEMO_DB, WIDGET_COLLECTION);
-
-            Bson filter = Filters.eq("_id", new ObjectId(id));
-            Iterable<Document> widgetCursor = collection.find(filter);
-            Document doc = widgetCursor.iterator().next();
-        
-            return MongoDb.buildWidget(doc);
-
-        } catch (NoSuchElementException ex) {
-            throw new ItemNotFoundException();
-            
-        } finally {
-            mongoClient.close();
-        }
     }
 }

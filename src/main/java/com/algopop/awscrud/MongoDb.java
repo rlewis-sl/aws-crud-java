@@ -3,7 +3,6 @@ package com.algopop.awscrud;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.algopop.awscrud.model.Widget;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerApi;
@@ -14,16 +13,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 public class MongoDb {
 
-    static final String WIDGETS_DEMO_DB = "widgets-demo";
-    static final String WIDGET_COLLECTION = "widget";
-
     private MongoDb() {}
 
-    static String getConnectionString() {
+    public static String getConnectionString() {
         Properties mongoProps = new Properties();
         InputStream propsStream = MongoDb.class.getClassLoader().getResourceAsStream("mongodb.properties");
         try {
@@ -42,7 +37,7 @@ public class MongoDb {
         return connectionString;
     }
 
-    static MongoClient getClient(String connectionString) {
+    public static MongoClient getClient(String connectionString) {
         final ConnectionString validatedConnectionString = new ConnectionString(connectionString);
 
         MongoClientSettings clientSettings = MongoClientSettings.builder()
@@ -55,18 +50,8 @@ public class MongoDb {
         return MongoClients.create(clientSettings);
     }
 
-    static MongoCollection<Document> getCollection(MongoClient mongoClient, String databaseName, String collectionName) {
+    public static MongoCollection<Document> getCollection(MongoClient mongoClient, String databaseName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         return database.getCollection(collectionName);
-    }
-
-    static Widget buildWidget(Document doc) {
-        ObjectId objectId = doc.getObjectId("_id");
-        String id = objectId.toString();
-        String name = doc.getString("name");
-        Float cost = Float.parseFloat(doc.getDouble("cost").toString());
-        Float weight = Float.parseFloat(doc.getDouble("weight").toString());
-
-        return new Widget(id, name, cost, weight);
     }
 }
