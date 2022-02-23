@@ -49,19 +49,6 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
             return response;
         }
 
-        // try {
-        //     widget = gson.fromJson(body, Widget.class);
-        // } catch (Exception ex) {
-        //     response.setStatusCode(400);
-
-        //     Map<String, String> headers = new HashMap<>();
-        //     headers.put("Content-Type", "text/plain");
-        //     response.setHeaders(headers);
-
-        //     response.setBody("Invalid JSON [" + ex.toString() + "]");
-        //     return response;
-        // }
-
         String id = createWidget(widget);
         try {
             Widget retrievedWidget = getWidget(id, true);
