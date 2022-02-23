@@ -1,5 +1,6 @@
 package com.algopop.awscrud;
 
+import com.algopop.awscrud.json.WidgetParsing;
 import com.algopop.awscrud.model.Widget;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -33,7 +34,20 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
         APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
 
         final String body = request.getBody();
-        Widget widget = gson.fromJson(body, Widget.class);
+        Widget widget;
+
+        try {
+            widget = WidgetParsing.getWidget(body);
+        } catch (Exception ex) {
+            response.setStatusCode(400);
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "text/plain");
+            response.setHeaders(headers);
+
+            response.setBody("Invalid JSON [" + ex.toString() + "]");
+            return response;
+        }
 
         String id = createWidget(widget);
         try {
