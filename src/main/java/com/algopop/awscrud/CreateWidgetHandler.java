@@ -13,8 +13,8 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.algopop.awscrud.dynamodb.Widgets.createWidget;
-import static com.algopop.awscrud.dynamodb.Widgets.getWidget;
+import static com.algopop.awscrud.singular.Widgets.createWidget;
+import static com.algopop.awscrud.singular.Widgets.getWidget;
 
 public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -48,6 +48,19 @@ public class CreateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent
             response.setBody("Invalid JSON [" + ex.toString() + "]");
             return response;
         }
+
+        // try {
+        //     widget = gson.fromJson(body, Widget.class);
+        // } catch (Exception ex) {
+        //     response.setStatusCode(400);
+
+        //     Map<String, String> headers = new HashMap<>();
+        //     headers.put("Content-Type", "text/plain");
+        //     response.setHeaders(headers);
+
+        //     response.setBody("Invalid JSON [" + ex.toString() + "]");
+        //     return response;
+        // }
 
         String id = createWidget(widget);
         try {

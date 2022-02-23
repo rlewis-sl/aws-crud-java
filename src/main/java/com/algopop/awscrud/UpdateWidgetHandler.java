@@ -13,7 +13,7 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.algopop.awscrud.dynamodb.Widgets.updateWidget;
+import static com.algopop.awscrud.singular.Widgets.updateWidget;
 
 public class UpdateWidgetHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
